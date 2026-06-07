@@ -99,7 +99,17 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    mpu6050_read_data(&hi2c2);
+    switch (current_i2c_state) {
+      case I2C_STATE_IDLE:
+        mpu6050_read_data(&hi2c2);
+        break;
+      case I2C_STATE_READING_MPU6050_DATA:
+        break;
+      case I2C_STATE_READ_MPU6050_DATA:
+        mpu6050_save_data();
+        break;
+    }
+    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
