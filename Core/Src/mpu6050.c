@@ -39,7 +39,7 @@ HAL_StatusTypeDef mpu6050_wake_device(I2C_HandleTypeDef *hi2c) {
     if (HAL_I2C_Mem_Write(hi2c, MPU6050_I2C_ADDRESS, MPU6050_REG_PWR_MGMT_1, I2C_MEMADD_SIZE_8BIT, &reset_bit, 1, 100) != HAL_OK) return HAL_ERROR;
     HAL_Delay(100);
     if (HAL_I2C_Mem_Write(hi2c, MPU6050_I2C_ADDRESS, MPU6050_REG_PWR_MGMT_1, I2C_MEMADD_SIZE_8BIT, &wake_bit, 1, 100) != HAL_OK) return HAL_ERROR;
-    
+
     return HAL_OK;
 }
 
@@ -48,7 +48,13 @@ HAL_StatusTypeDef mpu6050_read_data(I2C_HandleTypeDef *hi2c) {
 
     if (hi2c == NULL) return HAL_ERROR;
 
-    current_i2c_state = I2C_STATE_READING_MPU6050_DATA;
+    if (current_i2c_state == I2C_STATE_IDLE) {
+        current_i2c_state = I2C_STATE_READING_MPU6050_DATA;
+    }
+    else {
+        return HAL_BUSY;
+    }
+        
 
     return HAL_I2C_Mem_Read_IT(hi2c, MPU6050_I2C_ADDRESS, MPU6050_REG_ACCEL, I2C_MEMADD_SIZE_8BIT, rx_buffer, MPU6050_RX_BUFFER_SIZE);
 }
