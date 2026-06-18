@@ -1,5 +1,6 @@
 #include "mpu6050.h"
 #include "stm32f1xx_hal_def.h"
+#include "six-axis-calculation.h"
 
 #define MPU6050_I2C_ADDRESS (0x68 << 1)
 // MPU6050_REG_ACCEL is located at the accelerometer register, but I'll read the next 14 bytes in one go.
@@ -76,6 +77,8 @@ HAL_StatusTypeDef mpu6050_save_data(void) {
     __enable_irq();
 
     current_i2c_state = I2C_STATE_IDLE;
+
+    compute_angles(&mpu6050_data);
 
     return HAL_OK;
 }
