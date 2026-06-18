@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #define MPU6050_RX_BUFFER_SIZE 14
-// accelerometer - 16 bit each for x,y,z. We divide by 2 as its unsigned int, and the scale accounts for x numbers of g's.
+// accelerometer - 16 bit each for x,y,z. We divide by 2 as it's a signed int, and the scale accounts for x numbers of g's.
 #define ACCELEROMETER_SCALE 2
 #define ACCELEROMETER_SENSITIVITY (1.0f / ((1 << 16) / 2 / ACCELEROMETER_SCALE))
 
