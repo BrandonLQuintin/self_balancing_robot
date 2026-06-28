@@ -1,3 +1,20 @@
-build
-.cache
+# ===== Build output =====
+# STM32CubeIDE / Eclipse CDT
+Debug/
+Release/
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+
+# Intermediate / object files
+*.o
+*.obj
+*.d
+*.a
+*.su
+
+# ===== Tooling caches =====
 .mxproject
+.cache/

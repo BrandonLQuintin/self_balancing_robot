@@ -1,3 +1,0 @@
-{
-  "clangd.arguments": ["--query-driver=**/arm-none-eabi-gcc"]
-}
