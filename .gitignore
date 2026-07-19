@@ -18,3 +18,10 @@ Release/
 # ===== Tooling caches =====
 .mxproject
 .cache/
+
+# ===== Eclipse workspace metadata =====
+.metadata/
+
+# ===== Per-user IDE / debugger state =====
+*.sfrview.prefs
+*.launch
