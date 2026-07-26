@@ -54,7 +54,34 @@
 /* USER CODE END ExternalFunctions */
 
 /* USER CODE BEGIN 0 */
+/* Release an I2C2 bus left stuck by an interrupted transfer (e.g. a halted
+ * debug session): clock SCL 9 times so a slave holding SDA low can finish its
+ * byte, then force a STOP. HAL_I2C_Init() re-inits the peripheral afterwards. */
+static void I2C2_BusRecovery(void)
+{
+  GPIO_InitTypeDef gpio = {0};
 
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  gpio.Pin   = GPIO_PIN_10 | GPIO_PIN_11;  /* PB10 = SCL, PB11 = SDA */
+  gpio.Mode  = GPIO_MODE_OUTPUT_OD;
+  gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOB, &gpio);
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10 | GPIO_PIN_11, GPIO_PIN_SET);
+
+  for (uint8_t i = 0; i < 9; i++)
+  {
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
+    HAL_Delay(1);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_SET);
+    HAL_Delay(1);
+  }
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_RESET);  /* SDA low  */
+  HAL_Delay(1);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);    /* SDA high -> STOP */
+}
 /* USER CODE END 0 */
 /**
   * Initializes the Global MSP.
@@ -166,7 +193,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
   if(hi2c->Instance==I2C2)
   {
     /* USER CODE BEGIN I2C2_MspInit 0 */
-
+    I2C2_BusRecovery();
     /* USER CODE END I2C2_MspInit 0 */
 
     __HAL_RCC_GPIOB_CLK_ENABLE();
