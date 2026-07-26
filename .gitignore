@@ -25,3 +25,4 @@ Release/
 # ===== Per-user IDE / debugger state =====
 *.sfrview.prefs
 *.launch
+.settings/
