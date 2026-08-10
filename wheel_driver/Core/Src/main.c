@@ -56,7 +56,9 @@ static void MX_CAN_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+CAN_RxHeaderTypeDef RxHeader;
+uint8_t RxData[8];
+volatile uint8_t datacheck = 0U;
 /* USER CODE END 0 */
 
 /**
@@ -156,6 +158,7 @@ static void MX_CAN_Init(void)
 
   /* USER CODE BEGIN CAN_Init 1 */
 
+
   /* USER CODE END CAN_Init 1 */
   hcan.Instance = CAN1;
   hcan.Init.Prescaler = 2;
@@ -174,7 +177,30 @@ static void MX_CAN_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN CAN_Init 2 */
+  CAN_FilterTypeDef f = {0};
+  f.FilterBank = 0;
+  f.FilterMode = CAN_FILTERMODE_IDMASK;
+  f.FilterScale = CAN_FILTERSCALE_32BIT;
+  f.FilterMaskIdHigh = 0x0000;   // all-zero mask = accept everything
+  f.FilterMaskIdLow  = 0x0000;
+  f.FilterIdHigh     = 0x0000;
+  f.FilterIdLow      = 0x0000;
+  f.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+  f.FilterActivation = CAN_FILTER_ENABLE;
+  if (HAL_CAN_ConfigFilter(&hcan, &f) != HAL_OK)
+  {
+	  Error_Handler();
+  }
 
+  if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+  {
+	  Error_Handler();
+  }
+
+  if (HAL_CAN_Start(&hcan) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE END CAN_Init 2 */
 
 }
@@ -199,7 +225,17 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+  if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if ((RxHeader.StdId == 0x446))
+  {
+	  datacheck = 1;
+  }
+}
 /* USER CODE END 4 */
 
 /**
