@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "mpu6050.h"
+#include "can_communication.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,23 +96,7 @@ int main(void)
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
   mpu6050_wake_device(&hi2c2);
-  // 8/10/2026
-  CAN_TxHeaderTypeDef TxHeader;
-  uint8_t TxData[8] = {0};
-  uint32_t TxMailbox;
-
-  TxHeader.IDE = CAN_ID_STD;
-  TxHeader.StdId = 0x446;
-  TxHeader.RTR = CAN_RTR_DATA;
-  TxHeader.DLC = 2;
-
-  TxData[0] = 50;
-  TxData[1] = 0xAA;
-
-  if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK) {
-	  Error_Handler();
-  }
-
+  can_test_transmission(&hcan);
   /* USER CODE END 2 */
 
   /* Infinite loop */
